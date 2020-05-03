@@ -45,30 +45,36 @@ export default {
   methods: {
     init() {
       this.cid = this.$route.params.cid;
-      // fetch(``, {
-      //   method: "GET",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //     // token: this.token
-      //   }
-      // }).then(res => {
-      //   if (res.ok) {
-      //     return res.json();
-      //   }
-      // }).then(res => {
-      //   this.list = res.list;
-      // })
+      let url = ['/api/history/news', '/api/study/news', '/api/study/cpc/articles']
+      fetch(`${url[this.cid]}?page=${this.currentPage}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json"
+        }
+      }).then(res => {
+        if (res.ok) {
+          return res.json();
+        }
+      }).then(res => {
+        if(this.cid == 2){
+          this.lists = res.data.articles;
+        }else{
+          this.lists = res.data.news;
+        }
+        this.currentLists = this.lists.slice(0, 18);
+        this.totalPage = res.page_count;
+      });
 
-      this.lists = [];
-      for (let i = 0; i < 30; i++) {
-        this.lists.push({
-          title: "湖北省机械工程学会增材制造技术专题交流会线上会议顺利召开",
-          time: "2020-4-16",
-          id: i
-        });
-      }
-      this.currentLists = this.lists.slice(0, 18);
-      this.totalPage = Math.ceil(this.lists.length / 18);
+      // this.lists = [];
+      // for (let i = 0; i < 30; i++) {
+      //   this.lists.push({
+      //     title: "湖北省机械工程学会增材制造技术专题交流会线上会议顺利召开",
+      //     time: "2020-4-16",
+      //     id: i
+      //   });
+      // }
+      // this.currentLists = this.lists.slice(0, 18);
+      // this.totalPage = Math.ceil(this.lists.length / 18);
     },
     gotoPage(page) {
       console.log(page);
@@ -82,6 +88,7 @@ export default {
       this.$router.push({
         name: "Detail",
         params: {
+          cid: this.cid,
           aid: list.id
         }
       });
